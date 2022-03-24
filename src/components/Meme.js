@@ -1,5 +1,4 @@
-import React, {useState} from 'react'
-import memesData from '../memesData'
+import React, {useState, useEffect} from 'react'
 
 const Meme = () => {
     const [meme, setMeme] = useState({
@@ -9,11 +8,20 @@ const Meme = () => {
         isTextColorBlack: false
     })
 
-    const [allMemeImages, setAllMemeImages] = useState(memesData);
+    const [allMemes, setAllMemes] = useState([]);
+
+    useEffect(() => {
+        fetch("https://api.imgflip.com/get_memes")
+          .then((res) => res.json())
+              .then((data) => setAllMemes(data.data.memes))
+      }, [])
+      
+      console.log(allMemes)
 
     const getMemeImage = () => {
-        const memesArray = allMemeImages.data.memes;
-        const randomNumber = Math.floor(Math.random()*memesArray.length)
+        const memesArray = allMemes;
+        console.log(memesArray)
+        const randomNumber = Math.floor(Math.random() * (memesArray.length))
         const url = memesArray[randomNumber].url
         setMeme((prevMeme) => {
             return {
@@ -30,9 +38,11 @@ const Meme = () => {
                 ...prevText,
                 [name]: type === "checkbox" ? checked : value
             }
-            console.log(meme)
         })
     }
+
+    
+
 
     return (
         <>
@@ -73,10 +83,13 @@ const Meme = () => {
                 </div>
 
                 <div className='px-4 pt-8 '>
-                    <div className='relative flex'>
-                     {meme.randomImage !== "" && <img className='w-full h-screen rounded-lg border-2 border-black' src = {meme.randomImage} alt = "memeImage" /> }
-                     {meme.randomImage !== "" && <h2 className={`absolute top-2 text-${meme.isTextColorBlack ? "black" : "white"} text-[3.5rem] font-extrabold font-sans px-3 justify-center items-center text-center overflow-auto`}>{meme.topText}</h2>}
-                     {meme.randomImage !== "" && <h2 className={`absolute bottom-2 text-${meme.isTextColorBlack ? "black" : "white"} text-[3.5rem] font-extrabold font-sans px-3 justify-center items-center text-center overflow-auto`}>{meme.bottomText}</h2>}
+                    <div className='relative grid'>
+                        
+                     {meme.randomImage !== "" && <img className=' w-full h-screen rounded-lg border-2 border-black' src = {meme.randomImage} alt = "memeImage" /> }
+                        
+                     {meme.randomImage !== "" && <h2 className={`absolute top-2 text-${meme.isTextColorBlack ? "black" : "white"} justify-self-center text-[3.5rem] font-extrabold font-sans px-3 justify-center items-center text-center overflow-auto`}>{meme.topText}</h2>}
+                     {meme.randomImage !== "" && <h2 className={`absolute bottom-2 text-${meme.isTextColorBlack ? "black" : "white"} justify-self-center text-[3.5rem] font-extrabold font-sans px-3 justify-center items-center text-center overflow-auto`}>{meme.bottomText}</h2>}
+                        
                     </div>
 
                 </div>
